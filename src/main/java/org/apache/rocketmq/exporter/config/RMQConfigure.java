@@ -23,6 +23,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.apache.rocketmq.client.ClientConfig.SEND_MESSAGE_WITH_VIP_CHANNEL_PROPERTY;
 
 @Configuration
@@ -55,6 +58,41 @@ public class RMQConfigure {
     private String secretKey;
 
     private long outOfTimeSeconds;
+
+    private volatile String brokerIPAlias = System.getProperty("rocketmq.config.brokerIPAliasa", "");
+
+    private Map<String, String> brokerIPMap;
+
+    public String getBrokerIPAlias() {
+        return brokerIPAlias;
+    }
+
+    public void setBrokerIPAlias(String brokerIPAlias) {
+        this.brokerIPAlias = brokerIPAlias;
+        brokerIPMap = new HashMap<String, String>();
+        String[] pairs = brokerIPAlias.split(",");
+        for (String pair : pairs) {
+            String[] kv = pair.split(":");
+            brokerIPMap.put(kv[0], kv[1]);
+        }
+        logger.info("brokerIPAlias={}", brokerIPAlias);
+    }
+
+    public Map<String, String> getBrokerIPMap() {
+        return brokerIPMap;
+    }
+
+    public String getBrokerIPalias(String addr) {
+        if (addr == null || addr.isEmpty())
+            return addr;
+
+        String[] ipport = addr.split(":");
+        String ip = brokerIPMap.getOrDefault(ipport[0], ipport[0]);
+        String newAddr = ip + ":" + ipport[1];
+        logger.debug("old addr={}, newAdrr={}", addr, newAddr);
+        return newAddr;
+    }
+
 
     public boolean enableACL() {
         return this.enableACL;

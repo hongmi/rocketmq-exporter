@@ -60,7 +60,6 @@ import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.apache.rocketmq.remoting.exception.RemotingSendRequestException;
 import org.apache.rocketmq.remoting.exception.RemotingTimeoutException;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
-import org.apache.rocketmq.tools.admin.DefaultMQAdminExt;
 import org.apache.rocketmq.tools.admin.MQAdminExt;
 import org.apache.rocketmq.tools.admin.api.MessageTrack;
 import org.joor.Reflect;
@@ -81,8 +80,8 @@ import static org.apache.rocketmq.remoting.protocol.RemotingSerializable.decode;
 @Service("mqAdminExtImpl")
 public class MQAdminExtImpl implements MQAdminExt {
     @Autowired
-    @Qualifier("defaultMQAdminExt")
-    private DefaultMQAdminExt defaultMQAdminExt;
+    @Qualifier("myMQAdminExt")
+    private MyMQAdminExt defaultMQAdminExt;
 
     @Autowired
     private DefaultMQPullConsumer pullConsumer;

@@ -166,7 +166,7 @@ public class MetricsCollectTask {
             } catch (Exception ex) {
                 log.error(String.format("collectTopicOffset-getting topic(%s) stats error. the namesrv address is %s",
                     topic,
-                    JSON.toJSONString(mqAdminExt.getNameServerAddressList())));
+                    JSON.toJSONString(mqAdminExt.getNameServerAddressList())), ex);
                 continue;
             }
 
@@ -408,12 +408,14 @@ public class MetricsCollectTask {
             }
             for (BrokerData bd : topicRouteData.getBrokerDatas()) {
                 String masterAddr = bd.getBrokerAddrs().get(MixAll.MASTER_ID);
+                masterAddr = rmqConfigure.getBrokerIPalias(masterAddr);
                 if (!StringUtils.isBlank(masterAddr)) {
                     BrokerStatsData bsd = null;
                     try {
                         //how many messages has sent for the topic
                         bsd = mqAdminExt.viewBrokerStatsData(masterAddr, BrokerStatsManager.TOPIC_PUT_NUMS, topic);
                         String brokerIP = clusterInfo.getBrokerAddrTable().get(bd.getBrokerName()).getBrokerAddrs().get(MixAll.MASTER_ID);
+                        brokerIP = rmqConfigure.getBrokerIPalias(brokerIP);
                         metricsService.getCollector().addTopicPutNumsMetric(
                             bd.getCluster(),
                             bd.getBrokerName(),
@@ -434,6 +436,7 @@ public class MetricsCollectTask {
                         //how many bytes has sent for the topic
                         bsd = mqAdminExt.viewBrokerStatsData(masterAddr, BrokerStatsManager.TOPIC_PUT_SIZE, topic);
                         String brokerIP = clusterInfo.getBrokerAddrTable().get(bd.getBrokerName()).getBrokerAddrs().get(MixAll.MASTER_ID);
+                        brokerIP = rmqConfigure.getBrokerIPalias(brokerIP);
                         metricsService.getCollector().addTopicPutSizeMetric(
                             bd.getCluster(),
                             bd.getBrokerName(),
@@ -549,12 +552,14 @@ public class MetricsCollectTask {
         Set<Map.Entry<String, BrokerData>> clusterEntries = clusterInfo.getBrokerAddrTable().entrySet();
         for (Map.Entry<String, BrokerData> clusterEntry : clusterEntries) {
             String masterAddr = clusterEntry.getValue().getBrokerAddrs().get(MixAll.MASTER_ID);
+            masterAddr = rmqConfigure.getBrokerIPalias(masterAddr);
             if (StringUtils.isBlank(masterAddr)) {
                 continue;
             }
             BrokerStatsData bsd = null;
             String clusterName = clusterEntry.getValue().getCluster();
             String brokerIP = clusterEntry.getValue().getBrokerAddrs().get(MixAll.MASTER_ID);
+            brokerIP = rmqConfigure.getBrokerIPalias(brokerIP);
             String brokerName = clusterEntry.getValue().getBrokerName();
             try {
                 bsd = mqAdminExt.viewBrokerStatsData(masterAddr, BrokerStatsManager.BROKER_PUT_NUMS, clusterName);
@@ -613,6 +618,7 @@ public class MetricsCollectTask {
         Set<Map.Entry<String, BrokerData>> clusterEntries = clusterInfo.getBrokerAddrTable().entrySet();
         for (Map.Entry<String, BrokerData> clusterEntry : clusterEntries) {
             String masterAddr = clusterEntry.getValue().getBrokerAddrs().get(MixAll.MASTER_ID);
+            masterAddr = rmqConfigure.getBrokerIPalias(masterAddr);
             String clusterName = clusterEntry.getValue().getCluster();
 
             KVTable kvTable = null;

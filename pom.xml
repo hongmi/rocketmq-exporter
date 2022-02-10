@@ -17,7 +17,7 @@
 
     <properties>
         <rocketmq.version>4.8.0</rocketmq.version>
-        <docker.image.prefix>docker.io</docker.image.prefix>
+        <docker.image.prefix>hongmin</docker.image.prefix>
     </properties>
 
     <dependencies>
@@ -60,7 +60,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.17</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>verify</id>

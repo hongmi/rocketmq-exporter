@@ -27,8 +27,6 @@ import org.apache.rocketmq.common.MixAll;
 import org.apache.rocketmq.exporter.config.RMQConfigure;
 import org.apache.rocketmq.remoting.RPCHook;
 import org.apache.rocketmq.remoting.RemotingClient;
-import org.apache.rocketmq.tools.admin.DefaultMQAdminExt;
-import org.apache.rocketmq.tools.admin.DefaultMQAdminExtImpl;
 import org.joor.Reflect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,14 +62,14 @@ public class MQAdminInstance {
         return null;
     }
 
-    @Bean(destroyMethod = "shutdown", name = "defaultMQAdminExt")
-    private DefaultMQAdminExt buildDefaultMQAdminExt() throws Exception {
+    @Bean(destroyMethod = "shutdown", name = "myMQAdminExt")
+    private MyMQAdminExt buildDefaultMQAdminExt() throws Exception {
         String namesrvAddress = configure.getNamesrvAddr();
         if (StringUtils.isBlank(namesrvAddress)) {
-            log.error("Build DefaultMQAdminExt error, namesrv is null");
-            throw new Exception("Build DefaultMQAdminExt error, namesrv is null", null);
+            log.error("Build MyMQAdminExt error, namesrv is null");
+            throw new Exception("Build MyMQAdminExt error, namesrv is null", null);
         }
-        DefaultMQAdminExt defaultMQAdminExt = new DefaultMQAdminExt(this.aclHook,5000L);
+        MyMQAdminExt defaultMQAdminExt = new MyMQAdminExt(this.aclHook,5000L, configure);
         defaultMQAdminExt.setInstanceName("admin-" + System.currentTimeMillis());
         defaultMQAdminExt.setNamesrvAddr(namesrvAddress);
         try {
@@ -102,8 +100,8 @@ public class MQAdminInstance {
     }
 
     @Bean(destroyMethod = "shutdown")
-    private MQClientInstance buildInstance(@Qualifier("defaultMQAdminExt") DefaultMQAdminExt defaultMQAdminExt) {
-        DefaultMQAdminExtImpl defaultMQAdminExtImpl = Reflect.on(defaultMQAdminExt).get("defaultMQAdminExtImpl");
+    private MQClientInstance buildInstance(@Qualifier("myMQAdminExt") MyMQAdminExt defaultMQAdminExt) {
+        MyMQAdminExtImpl defaultMQAdminExtImpl = Reflect.on(defaultMQAdminExt).get("defaultMQAdminExtImpl");
         return Reflect.on(defaultMQAdminExtImpl).get("mqClientInstance");
     }
 

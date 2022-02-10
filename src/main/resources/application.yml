@@ -21,6 +21,8 @@ rocketmq:
     accessKey:  # if >=4.4.0
     secretKey:  # if >=4.4.0
     outOfTimeSeconds: 60 # Cache clear time with no update
+    # replace public brokerIP to local ip, while failed to connect.
+    brokerIPAlias: "ip1:ip2,ip3:ip4"
 
 threadpool:
   collect-client-metric-executor:
